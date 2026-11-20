@@ -4,9 +4,9 @@
  */
 package com.mycompany.kursusmobil;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,16 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class KursusDAO {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager em;
 
-    // Method Login (Pengganti query SQL di loginform.java)
+    // Login: mengembalikan Pengguna jika cocok, null jika tidak
+    @Transactional(readOnly = true)
     public Pengguna cekLogin(String username, String password) {
-        String hql = "FROM Pengguna WHERE username = :user AND password = :pass";
-        Query<Pengguna> query = sessionFactory.getCurrentSession().createQuery(hql, Pengguna.class);
+        String jpql = "SELECT p FROM Pengguna p WHERE p.username = :user AND p.password = :pass";
+        TypedQuery<Pengguna> query = em.createQuery(jpql, Pengguna.class);
         query.setParameter("user", username);
         query.setParameter("pass", password);
-        return query.uniqueResult();
+        return query.getResultList().stream().findFirst().orElse(null);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.mycompany.kursusmobil;
+package com.mycompany;
 
 import java.io.InputStream;
 import java.sql.Connection;
